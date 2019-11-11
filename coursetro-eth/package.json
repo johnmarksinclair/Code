@@ -1,0 +1,17 @@
+{
+  "name": "coursetro-eth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "lite-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "web3": "^0.20.6"
+  },
+  "devDependencies": {
+    "lite-server": "^2.5.4"
+  }
+}
