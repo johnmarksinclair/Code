@@ -1,6 +1,16 @@
 pragma solidity ^0.5.11;
 
-contract OptometristRegistry {
+contract Owned {
+    address owner;
+    constructor {
+        owner = msg.sender;
+    }
+    modifier onlyOwner {
+        require(msg.sender ==  owner);
+    }
+}
+
+contract OptometristRegistry is Owned {
     struct Optometrist {
         bytes16 name;
         uint npi;
@@ -11,9 +21,9 @@ contract OptometristRegistry {
     function createOptometrist(address _address, bytes16 _name, uint _npi, uint _licenseNum) public {
         //var optometrist = optometrists[_address];
         Optometrist(_name, _npi, _licenseNum);
-        Optometrist.name = _name;
-        Optometrist.npi = _npi;
-        Optometrist.licenseNum = _licenseNum;
+        // Optometrist.name = _name;
+        // Optometrist.npi = _npi;
+        // Optometrist.licenseNum = _licenseNum;
         optometristAccts.push(_address)-1;
     }
     function getOptometrists() public view returns (address[] memory) {
