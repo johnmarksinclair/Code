@@ -6,11 +6,11 @@ contract OptometristRegistry {
         uint npi;
         uint licenseNum;
     }
-    mapping (uint => OptometristInfo) public optometrists;
-    uint[] public optometristNPIs;
-    function createOptometrist(bytes32 _name, uint _npi, uint _licenseNum) public {
+    mapping (uint => OptometristInfo) private optometrists;
+    uint[] private optometristNPIs;
+    function createOptometrist(string memory _name, uint _npi, uint _licenseNum) public {
         OptometristInfo storage newOpt = optometrists[_npi];
-        newOpt.name = _name;
+        newOpt.name = stringToBytes32(_name);
         newOpt.licenseNum = _licenseNum;
         optometristNPIs.push(_npi);
     }
@@ -20,5 +20,14 @@ contract OptometristRegistry {
     }
     function countOptometrists() public view returns (uint) {
         return optometristNPIs.length;
+    }
+    function stringToBytes32(string memory source) private returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+        assembly {
+            result := mload(add(source, 32))
+        }
     }
 }
