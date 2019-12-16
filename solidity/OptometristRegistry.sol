@@ -1,38 +1,24 @@
 pragma solidity ^0.5.11;
 
-contract Owned {
-    address owner;
-    constructor {
-        owner = msg.sender;
-    }
-    modifier onlyOwner {
-        require(msg.sender ==  owner);
-    }
-}
-
-contract OptometristRegistry is Owned {
-    struct Optometrist {
-        bytes16 name;
+contract OptometristRegistry {
+    struct OptometristInfo {
+        bytes32 name;
         uint npi;
         uint licenseNum;
     }
-    mapping (address => Optometrist) public optometrists;
-    address[] public optometristAccts;
-    function createOptometrist(address _address, bytes16 _name, uint _npi, uint _licenseNum) public {
-        //var optometrist = optometrists[_address];
-        Optometrist(_name, _npi, _licenseNum);
-        // Optometrist.name = _name;
-        // Optometrist.npi = _npi;
-        // Optometrist.licenseNum = _licenseNum;
-        optometristAccts.push(_address)-1;
+    mapping (uint => OptometristInfo) public optometrists;
+    uint[] public optometristNPIs;
+    function createOptometrist(bytes32 _name, uint _npi, uint _licenseNum) public {
+        OptometristInfo storage newOpt = optometrists[_npi];
+        newOpt.name = _name;
+        newOpt.licenseNum = _licenseNum;
+        optometristNPIs.push(_npi);
     }
-    function getOptometrists() public view returns (address[] memory) {
-        return optometristAccts;
-    }
-    function getOptometrist(address ins) public view returns (bytes16, uint, uint) {
-        return(optometrists[ins].name, optometrists[ins].npi, optometrists[ins].licenseNum);
+    function getOptometrist(uint _npi) public view returns (bytes32, uint, uint) {
+        OptometristInfo storage opt = optometrists[_npi];
+        return (opt.name, opt.npi, opt.licenseNum);
     }
     function countOptometrists() public view returns (uint) {
-        return optometristAccts.length;
+        return optometristNPIs.length;
     }
 }
