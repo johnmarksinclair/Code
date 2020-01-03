@@ -23,16 +23,16 @@
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
 
-        <label for="fName" class="col-lg-2 control-label">First Name</label>
+        <label for="fName" class="col-lg-2 control-label">Name</label>
         <input id="fName" type="text">
 
-        <label for="lName" class="col-lg-2 control-label">Last Name</label>
+        <label for="lName" class="col-lg-2 control-label">NPI</label>
         <input id="lName" type="text">
 
-        <label for="age" class="col-lg-2 control-label">Instructor Age</label>
+        <label for="age" class="col-lg-2 control-label">License Number</label>
         <input id="age" type="text">
 
-        <button id="button">Update Instructor</button>
+        <button id="button">Add Optometrist</button>
 
     </div>
 
@@ -47,23 +47,22 @@
 
        web3.eth.defaultAccount = web3.eth.accounts[0];
 
-       var CoursetroContract = web3.eth.contract([
+       var OptometristRegistryContract = web3.eth.contract([
 	{
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_address",
-				"type": "address"
-			},
-			{
+				"internalType": "string",
 				"name": "_name",
-				"type": "bytes16"
+				"type": "string"
 			},
 			{
+				"internalType": "uint256",
 				"name": "_npi",
 				"type": "uint256"
 			},
 			{
+				"internalType": "uint256",
 				"name": "_licenseNum",
 				"type": "uint256"
 			}
@@ -80,6 +79,7 @@
 		"name": "countOptometrists",
 		"outputs": [
 			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -92,56 +92,27 @@
 		"constant": true,
 		"inputs": [
 			{
-				"name": "ins",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "_npi",
+				"type": "uint256"
 			}
 		],
 		"name": "getOptometrist",
 		"outputs": [
 			{
+				"internalType": "bytes32",
 				"name": "",
-				"type": "bytes16"
+				"type": "bytes32"
 			},
 			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			},
 			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getOptometrists",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "optometristAccts",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
 			}
 		],
 		"payable": false,
@@ -150,11 +121,11 @@
 	}
 ]);
 
-       var Coursetro = CoursetroContract.at('0xD65A66Dc8454B28215489363E78cfA1a87989484');
+       var Registry = OptometristRegistryContract.at('0x93D6e32Fc17D5E52177a0e3B0AE8301825EF96d0');
 
-       var instructorEvent = Coursetro.instructorInfo({}, 'latest');
+       var optometristEvent = Registry.instructorInfo({}, 'latest');
 
-       instructorEvent.watch(function(error, result) {
+       optometristEvent.watch(function(error, result) {
            if (!error) {
                if (result.blockHash != $("#insTrans").html())
                     $("#loader").hide();
@@ -165,14 +136,14 @@
            }
        });
 
-       Coursetro.countInstructors((err, res) => {
+       Registry.countInstructors((err, res) => {
            if (res)
             $("#countIns").html(res.c + ' Instructors');
        })
 
        $("#button").click(function() {
             $("#loader").show();
-           Coursetro.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fName").val(), $("#lName").val(), (err, res) => {
+			Registry.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fName").val(), $("#lName").val(), (err, res) => {
                if (res) {
                    $("#loader").hide();
                }
