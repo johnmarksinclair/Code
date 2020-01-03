@@ -14,25 +14,27 @@
 <body>
     <div class="container">
 
-        <h1>Optometrist</h1>
+        <h1>Optometrist Registry</h1>
         <span id="countIns"></span>
 
         <h2 id="instructor"></h2>
         <span id="insTrans"></span>
-        <hr>
+		<hr>
+		
+		<img id="loader" src="https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40">
 
-        <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+        <label for="name" class="col-lg-2 control-label">Name</label>
+        <input id="name" type="text">
 
-        <label for="fName" class="col-lg-2 control-label">Name</label>
-        <input id="fName" type="text">
+        <label for="npi" class="col-lg-2 control-label">NPI</label>
+        <input id="npi" type="text">
 
-        <label for="lName" class="col-lg-2 control-label">NPI</label>
-        <input id="lName" type="text">
+        <label for="licenseNo" class="col-lg-2 control-label">License Number</label>
+        <input id="licenseNo" type="text">
 
-        <label for="age" class="col-lg-2 control-label">License Number</label>
-        <input id="age" type="text">
-
-        <button id="button">Add Optometrist</button>
+		<button id="button1">Add Optometrist</button>
+		
+		<button id="button2">Count Optometrists</button>
 
     </div>
 
@@ -48,6 +50,21 @@
        web3.eth.defaultAccount = web3.eth.accounts[0];
 
        var OptometristRegistryContract = web3.eth.contract([
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "countOptometrists",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
 	{
 		"constant": false,
 		"inputs": [
@@ -75,21 +92,6 @@
 	},
 	{
 		"constant": true,
-		"inputs": [],
-		"name": "countOptometrists",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -97,22 +99,12 @@
 				"type": "uint256"
 			}
 		],
-		"name": "getOptometrist",
+		"name": "checkOptometrist",
 		"outputs": [
 			{
-				"internalType": "bytes32",
+				"internalType": "string",
 				"name": "",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"payable": false,
@@ -121,7 +113,7 @@
 	}
 ]);
 
-       var Registry = OptometristRegistryContract.at('0x93D6e32Fc17D5E52177a0e3B0AE8301825EF96d0');
+       var Registry = OptometristRegistryContract.at('0xb711848d7d0da3F4CF62d8a5087B8B8f79c35449');
 
        var optometristEvent = Registry.instructorInfo({}, 'latest');
 
@@ -130,7 +122,7 @@
                if (result.blockHash != $("#insTrans").html())
                     $("#loader").hide();
                 $("#insTrans").html('Block hash: ' + result.blockHash);
-               $("#instructor").html(web3.toAscii(result.args.fName) + ' ' + web3.toAscii(result.args.lName) + ' (' + result.args.age + ' years old)');
+               $("#instructor").html(web3.toAscii(result.args.name) + ' ' + web3.toAscii(result.args.npi) + ' (' + result.args.licenseNum);
            } else {
                 $("#loader").hide();
            }
@@ -141,9 +133,18 @@
             $("#countIns").html(res.c + ' Instructors');
        })
 
-       $("#button").click(function() {
+       $("#button1").click(function() {
             $("#loader").show();
-			Registry.setInstructor(web3.eth.defaultAccount, $("#age").val(), $("#fName").val(), $("#lName").val(), (err, res) => {
+			Registry.createOptometrist(web3.eth.defaultAccount, $("#name").val(), $("#npi").val(), $("#licenseNo").val(), (err, res) => {
+               if (res) {
+                   $("#loader").hide();
+               }
+           });
+       });
+
+	   $("#button2").click(function() {
+            $("#loader").show();
+			Registry.countOptometrists(web3.eth.defaultAccount, (err, res) => {
                if (res) {
                    $("#loader").hide();
                }
